@@ -1,0 +1,24 @@
+{
+  "name": "aes_nanocomm",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "nanocomm-server": "bin/nanocomm-server.js",
+    "nanocomm-service": "bin/nanocomm-service.js"
+  },
+  "scripts": {
+    "start": "node bin/nanocomm-server.js start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.5",
+    "minimist": "^1.2.8",
+    "node-ipc": "^12.0.0"
+  }
+}
