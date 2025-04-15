@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require("dotenv").config();
 const { startServer } = require("../lib/server");
 const args = require("minimist")(process.argv.slice(2));
 

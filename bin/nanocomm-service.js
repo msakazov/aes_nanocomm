@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require("dotenv").config();
 const { startService } = require("../lib/service");
 const args = require("minimist")(process.argv.slice(2));
 const path = require("path");
