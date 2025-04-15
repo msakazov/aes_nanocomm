@@ -67,6 +67,11 @@ Example:
 node ./bin/nanocomm-service.js start --appPath ./services/myApp.js --serviceName myService --servicePort 5000 --debug
 ```
 
+## START USING PM2
+
+- Start Server: pm2 start nanocomm-server.json
+- Start Service (examples/express_service): pm2 start test_service.json
+
 ### API Endpoints
 
 #### Nanocomm Server

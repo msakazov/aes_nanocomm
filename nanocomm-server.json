@@ -1,0 +1,9 @@
+{
+    "apps": [
+        {
+            "name": "nanocomm-server",
+            "script": "bin/nanocomm-server.js",
+            "args" : "start"
+        }
+    ]
+}
