@@ -31,12 +31,4 @@ app.get("/service_comm", (req, res) => {
   }
 });
 
-app.use("/status", (req, res) => {
-  res.json({
-    status: "OK",
-    service: serviceRegistry.getCurrentService(),
-    message: `Service is running`,
-  });
-});
-
 module.exports = app;
