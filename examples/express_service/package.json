@@ -1,0 +1,19 @@
+{
+  "name": "nanocomm_service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:nanocomm": "nanocomm-service --appPath ./app.js --serviceName test_service start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aes_nanocomm": "file:../../",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  }
+}
