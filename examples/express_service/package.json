@@ -15,5 +15,10 @@
     "aes_nanocomm": "file:../../",
     "dotenv": "^16.5.0",
     "express": "^5.1.0"
+  },
+  "nanocommPlugins": {
+    "formvars": {
+      "enabled": true
+    }
   }
 }

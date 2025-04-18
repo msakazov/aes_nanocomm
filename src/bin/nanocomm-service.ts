@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 
-require("dotenv").config();
-const { startService } = require("../lib/service");
-const args = require("minimist")(process.argv.slice(2));
-const path = require("path");
-const fs = require("fs");
+import "dotenv/config";
+import { startService } from "../lib/service.js";
+import minimist from "minimist";
+import path from "path";
+import { pathToFileURL } from "url";
+import { readFile } from "fs/promises";
+import { Application } from "express";
+
+const args = minimist(process.argv.slice(2));
 
 const showHelp = () => {
   console.log(`
@@ -40,13 +44,11 @@ if (args._[0] === "start") {
 
   // If no serviceName is provided, try to read it from package.json
   if (!serviceName) {
-    const appPathParts = appPath.split(path.sep);
-    const rootPath = appPathParts.slice(0, 2).join(path.sep); // Get the first level in the app path
-    const packageJsonPath = path.join(rootPath, "package.json");
-    if (fs.existsSync(packageJsonPath)) {
-      const packageJson = require(packageJsonPath);
-      serviceName = packageJson.name;
-    }
+    const packageJson = JSON.parse(
+      await readFile(path.resolve(process.cwd(), "package.json"), "utf-8")
+    );
+
+    serviceName = packageJson.name;
   }
 
   if (!appPath) {
@@ -61,8 +63,14 @@ if (args._[0] === "start") {
     process.exit(1);
   }
 
+  const appUrl = pathToFileURL(path.resolve(process.cwd(), appPath)).href;
+
+  const { default: app } = (await import(appUrl)) as {
+    default: Application;
+  };
+
   console.log(`Starting service "${serviceName}" on port ${port}...`);
-  startService({ appPath, serviceName, port, nanocommServer, debug });
+  startService({ app, serviceName, port, nanocommServer, debug });
 } else {
   console.error(
     "Error: Unknown command. Use --help to see available commands."

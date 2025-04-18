@@ -1,24 +1,35 @@
-const express = require("express");
-const { createProxyMiddleware } = require("http-proxy-middleware");
-const ipc = require("node-ipc").default;
+import express from "express";
+import { createProxyMiddleware } from "http-proxy-middleware";
+import { loadPlugins } from "./utils.js";
+import ipc from "node-ipc";
+import packageJson from '../../package.json' with { type: "json" };
 const app = express();
 
-const packageJson = require("../package.json");
-const currentVersion = packageJson.version;
+import {
+  NanocommServices,
+  NanocommService,
+  StartServerOptions,
+} from "../types/server.js";
 
-const startServer = (options = {}) => {
+const currentVersion = packageJson.version;
+// Store registered services
+let nanocomm_services: NanocommServices = new Map();
+
+const startServer = async (options: StartServerOptions = {}) => {
   const {
     serverName = "aes-nanocomm-server",
     port = 3000,
     debug = false,
   } = options;
 
-  // Store registered services
-  let nanocomm_services = new Map();
+  nanocomm_services.clear();
+
+  // Load plugins
+  await loadPlugins(app);
 
   // Notify all existing services about the new service
   // and notify the new service about all existing services
-  const notifyNewService = (new_service) => {
+  const notifyNewService = (new_service: NanocommService) => {
     nanocomm_services.forEach((service, serviceName) => {
       // Only notify if the service is not the one that just registered
       if (serviceName !== new_service.serviceName) {
@@ -37,8 +48,8 @@ const startServer = (options = {}) => {
   };
 
   // Notify all remaining services about the unregistered service
-  const notifyServiceRemoved = (removed_service) => {
-    nanocomm_services.forEach((service) => {
+  const notifyServiceRemoved = (removed_service: NanocommService) => {
+    nanocomm_services.forEach((service: NanocommService) => {
       ipc.server.emit(service.client, "service-removed", {
         serviceName: removed_service.serviceName,
         url: removed_service.url,
@@ -46,7 +57,7 @@ const startServer = (options = {}) => {
     });
   };
 
-  const registerService = (service, client) => {
+  const registerService = (service: NanocommService, client: any) => {
     const { ver, serviceName, port: servicePort, debug } = service;
 
     // Check for version mismatch from package.json
@@ -67,8 +78,6 @@ const startServer = (options = {}) => {
     const proxy = createProxyMiddleware({
       target: `http://localhost:${servicePort}`,
       changeOrigin: true,
-      pathRewrite: (path, req) => path.replace(serviceName, ""), // remove prefix
-      logLevel: debug ? "debug" : "silent",
     });
 
     app.use(`/api/${serviceName}`, proxy);
@@ -90,7 +99,7 @@ const startServer = (options = {}) => {
     notifyNewService(service);
   };
 
-  const unregisterService = (serviceName) => {
+  const unregisterService = (serviceName: string) => {
     const service = nanocomm_services.get(serviceName);
     if (!service) {
       console.log(`[${serverName}]`, `Service ${serviceName} not found.`);
@@ -99,7 +108,10 @@ const startServer = (options = {}) => {
 
     const { proxy, url } = service;
     // Remove the dynamic route for the module
+
+    /* @ts-ignore */
     app.router.stack = app.router.stack.filter(
+      /* @ts-ignore */
       (layer) => !(layer.handle === proxy)
     );
 
@@ -168,4 +180,4 @@ const startServer = (options = {}) => {
   });
 };
 
-module.exports = { ipc, app, startServer };
+export { ipc, app, nanocomm_services, startServer };

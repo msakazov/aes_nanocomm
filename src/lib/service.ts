@@ -1,27 +1,32 @@
-const path = require("path");
-const ipc = require("node-ipc").default;
+import express from "express";
+import ipc from "node-ipc";
+import { loadPlugins } from "./utils.js";
 
-const {
+import {
   getCurrentService,
   setCurrentService,
   addService,
   removeService,
-} = require("./service_registry");
+} from "./service_registry.js";
 
-const packageJson = require("../package.json");
+import packageJson from "../../package.json" with { type: "json" };
+import { StartServiceOptions, Service } from "../types/service.js";
 const currentVersion = packageJson.version;
 
-function startService(options = {}) {
+async function startService(options: StartServiceOptions) {
   const {
-    appPath,
+    app : serviceApp,
     serviceName,
-    nanocommServer = "aes-nanocomm-server",
+    nanocommServer,
     port = 0,
     debug = false,
   } = options;
 
-  const absoluteAppPath = path.resolve(appPath);
-  const app = require(absoluteAppPath);
+  const app = express();
+  // Load plugins
+  await loadPlugins(app);
+
+  app.use("/", serviceApp);
 
   app.use("/status", (req, res) => {
     res.json({
@@ -32,6 +37,7 @@ function startService(options = {}) {
   });
 
   const server = app.listen(port, () => {
+     /* @ts-ignore */
     const actualPort = server.address().port;
 
     console.log(`[${serviceName}]`, `Service is running on port ${actualPort}`);
@@ -40,14 +46,16 @@ function startService(options = {}) {
     ipc.config.retry = 1500;
     ipc.config.silent = !debug;
 
+    const currentService: Service = {
+      ver: currentVersion,
+      serviceName,
+      port: actualPort,
+      debug
+    }
+
     ipc.connectTo(nanocommServer, () => {
       ipc.of[nanocommServer].on("connect", () => {
-        ipc.of[nanocommServer].emit("register", {
-          ver: currentVersion,
-          serviceName,
-          port: actualPort,
-          debug,
-        });
+        ipc.of[nanocommServer].emit("register", currentService);
       });
 
       ipc.of[nanocommServer].on("error", (data) => {
@@ -76,12 +84,9 @@ function startService(options = {}) {
         process.exit();
       });
 
-      setCurrentService({
-        serviceName,
-        port: actualPort,
-      });
+      setCurrentService(currentService);
     });
   });
 }
 
-module.exports = { startService };
+export { startService };

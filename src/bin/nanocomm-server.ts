@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
-require("dotenv").config();
-const { startServer } = require("../lib/server");
-const args = require("minimist")(process.argv.slice(2));
+import "dotenv/config";
+import minimist from "minimist";
+import { startServer } from "../lib/server.js";
+
+const args = minimist(process.argv.slice(2));
 
 const showHelp = () => {
   console.log(`

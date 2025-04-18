@@ -2,7 +2,14 @@ const express = require("express");
 const { serviceRegistry } = require("aes_nanocomm");
 
 const app = express();
+app.use(express.json()); // Middleware to parse JSON bodies
 const services = serviceRegistry.getRegistry();
+
+app.post("/test", (req, res) => {
+  console.log(`Test endpoint hit, data:`, req.body);
+  req.body.test = "OK";
+  res.json(req.body || { message: "No data received" });
+});
 
 app.get("/service_comm", (req, res) => {
   console.log(`Services available:`);

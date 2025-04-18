@@ -1,0 +1,10 @@
+import { AxiosInstance } from "axios";
+import { Service, ServiceRegistry } from "../types/service.js";
+declare const getCurrentService: () => Service;
+declare const setCurrentService: (service: Service) => void;
+declare const getRegistry: () => ServiceRegistry;
+declare const addService: (service: Service) => void;
+declare const getService: (serviceName: string) => AxiosInstance | undefined;
+declare const getServiceMetadata: (serviceName: string) => Service;
+declare const removeService: (serviceName: string) => void;
+export { getCurrentService, setCurrentService, getRegistry, addService, getService, getServiceMetadata, removeService, };
