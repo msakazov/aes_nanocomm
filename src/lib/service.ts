@@ -9,9 +9,11 @@ import {
   removeService,
 } from "./service_registry.js";
 
-import packageJson from "../../package.json" assert { type: "json" };
 import { StartServiceOptions, Service } from "../types/service.js";
-const currentVersion = packageJson.version;
+
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const currentVersion = require("../../package.json").version;
 
 async function startService(options: StartServiceOptions) {
   const {
@@ -36,7 +38,11 @@ async function startService(options: StartServiceOptions) {
     });
   });
 
-  const server = app.listen(port, () => {
+  const server = app.listen(port, (error) => {
+    if (error) {
+      console.error(`[${serviceName}]`, "Error starting service:", error);
+      process.exit(1);
+    }
     /* @ts-ignore */
     const actualPort = server.address().port;
 

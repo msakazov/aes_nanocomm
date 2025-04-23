@@ -2,9 +2,10 @@ import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { loadPlugins } from "./utils.js";
 import ipc from "node-ipc";
-import packageJson from "../../package.json" assert { type: "json" };
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const currentVersion = require("../../package.json").version;
 const app = express();
-const currentVersion = packageJson.version;
 // Store registered services
 let nanocomm_services = new Map();
 const startServer = async (options = {}) => {
@@ -137,7 +138,11 @@ const startServer = async (options = {}) => {
         });
     });
     ipc.server.start();
-    app.listen(port, () => {
+    app.listen(port, (error) => {
+        if (error) {
+            console.error(`[${serverName}]`, "Error starting server:", error);
+            process.exit(1);
+        }
         console.log(`[${serverName}]`, `NANOCOMM SERVER Listening at port ${port}`);
     });
 };

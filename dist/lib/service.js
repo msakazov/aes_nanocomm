@@ -2,8 +2,9 @@ import express from "express";
 import ipc from "node-ipc";
 import { loadPlugins } from "./utils.js";
 import { getCurrentService, setCurrentService, addService, removeService, } from "./service_registry.js";
-import packageJson from "../../package.json" assert { type: "json" };
-const currentVersion = packageJson.version;
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const currentVersion = require("../../package.json").version;
 async function startService(options) {
     const { app: serviceApp, serviceName, nanocommServer, port = 0, debug = false, } = options;
     const app = express();
@@ -17,7 +18,11 @@ async function startService(options) {
             message: `Service is running`,
         });
     });
-    const server = app.listen(port, () => {
+    const server = app.listen(port, (error) => {
+        if (error) {
+            console.error(`[${serviceName}]`, "Error starting service:", error);
+            process.exit(1);
+        }
         /* @ts-ignore */
         const actualPort = server.address().port;
         console.log(`[${serviceName}]`, `Service is running on port ${actualPort}`);
