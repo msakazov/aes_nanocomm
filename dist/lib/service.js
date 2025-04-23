@@ -2,7 +2,7 @@ import express from "express";
 import ipc from "node-ipc";
 import { loadPlugins } from "./utils.js";
 import { getCurrentService, setCurrentService, addService, removeService, } from "./service_registry.js";
-import packageJson from "../../package.json" with { type: "json" };
+import packageJson from "../../package.json" assert { type: "json" };
 const currentVersion = packageJson.version;
 async function startService(options) {
     const { app: serviceApp, serviceName, nanocommServer, port = 0, debug = false, } = options;
@@ -28,7 +28,7 @@ async function startService(options) {
             ver: currentVersion,
             serviceName,
             port: actualPort,
-            debug
+            debug,
         };
         ipc.connectTo(nanocommServer, () => {
             ipc.of[nanocommServer].on("connect", () => {

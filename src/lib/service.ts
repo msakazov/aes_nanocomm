@@ -9,13 +9,13 @@ import {
   removeService,
 } from "./service_registry.js";
 
-import packageJson from "../../package.json" with { type: "json" };
+import packageJson from "../../package.json" assert { type: "json" };
 import { StartServiceOptions, Service } from "../types/service.js";
 const currentVersion = packageJson.version;
 
 async function startService(options: StartServiceOptions) {
   const {
-    app : serviceApp,
+    app: serviceApp,
     serviceName,
     nanocommServer,
     port = 0,
@@ -37,7 +37,7 @@ async function startService(options: StartServiceOptions) {
   });
 
   const server = app.listen(port, () => {
-     /* @ts-ignore */
+    /* @ts-ignore */
     const actualPort = server.address().port;
 
     console.log(`[${serviceName}]`, `Service is running on port ${actualPort}`);
@@ -50,8 +50,8 @@ async function startService(options: StartServiceOptions) {
       ver: currentVersion,
       serviceName,
       port: actualPort,
-      debug
-    }
+      debug,
+    };
 
     ipc.connectTo(nanocommServer, () => {
       ipc.of[nanocommServer].on("connect", () => {

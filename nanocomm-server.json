@@ -1,9 +1,9 @@
 {
-    "apps": [
-        {
-            "name": "nanocomm-server",
-            "script": "bin/nanocomm-server.js",
-            "args" : "start"
-        }
-    ]
+  "apps": [
+    {
+      "name": "nanocomm-server",
+      "script": "dist/bin/nanocomm-server.js",
+      "args": "start"
+    }
+  ]
 }

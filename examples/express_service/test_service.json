@@ -1,9 +1,9 @@
 {
-    "apps": [
-        {
-            "name": "test_service",
-            "script": "node_modules/aes_nanocomm/bin/nanocomm-service.js",
-            "args" : "--appPath ./app.js --serviceName test_service start"
-        }
-    ]
+  "apps": [
+    {
+      "name": "test_service",
+      "script": "node_modules/aes_nanocomm/dist/bin/nanocomm-service.js",
+      "args": "--appPath ./app.js --serviceName test_service start"
+    }
+  ]
 }

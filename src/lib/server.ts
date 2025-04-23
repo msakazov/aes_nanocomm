@@ -2,7 +2,7 @@ import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { loadPlugins } from "./utils.js";
 import ipc from "node-ipc";
-import packageJson from '../../package.json' with { type: "json" };
+import packageJson from "../../package.json" assert { type: "json" };
 const app = express();
 
 import {
