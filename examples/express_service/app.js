@@ -5,9 +5,13 @@ const app = express();
 app.use(express.json()); // Middleware to parse JSON bodies
 const services = serviceRegistry.getRegistry();
 
-app.post("/test", (req, res) => {
+app.use("/test", (req, res) => {
   console.log(`Test endpoint hit, data:`, req.body);
-  req.body.test = "OK";
+  console.log(`Test endpoint hit, query:`, req.query);
+  console.log(`Test endpoint hit, headers:`, req.headers);
+  console.log(`Test endpoint hit, params:`, req.params);
+  if (Array.isArray(req.body)) req.body.push({ test: "OK" });
+  else req.body.test = "OK";
   res.json(req.body || { message: "No data received" });
 });
 
